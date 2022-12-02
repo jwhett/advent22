@@ -21,16 +21,26 @@ func (e *Elf) AddToCalories(cal int) {
 	e.Calories = e.Calories + cal
 }
 
-// ByCalories implements sort.Interface for []Elf
+type Elves []Elf
+
+func (e Elves) SumCalories() int {
+	var result int
+	for _, elf := range e {
+		result = result + elf.Calories
+	}
+	return result
+}
+
+// ByCalories implements sort.Interface for Elves
 // based on Calories of rations for each Elf.
-type ByCalories []Elf
+type ByCalories Elves
 
 func (a ByCalories) Len() int           { return len(a) }
 func (a ByCalories) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByCalories) Less(i, j int) bool { return a[i].Calories < a[j].Calories }
 
 func main() {
-	elves := make([]Elf, 0)
+	elves := make(Elves, 0)
 
 	file, err := os.Open(inputFile)
 	if err != nil {
@@ -69,4 +79,7 @@ func main() {
 	sort.Sort(ByCalories(elves))
 	loadedElf := elves[len(elves)-1]
 	fmt.Printf("// Elf ID %d has the most calories with %d\n", loadedElf.Id, loadedElf.Calories)
+
+	topThreeElves := elves[len(elves)-3:]
+	fmt.Printf("// Top three Elves have %d calories between them.\n", topThreeElves.SumCalories())
 }
