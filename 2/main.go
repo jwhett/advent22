@@ -37,6 +37,11 @@ func duel(theirShape, myShape Rule) Result {
 	}
 }
 
+func evalPartTwo(theirShape Rule, rules ShapeRules, cheats CheatResults) Result {
+	// TODO
+	return WIN
+}
+
 func main() {
 	// read input
 	file, err := os.Open(inputFile)
@@ -61,6 +66,7 @@ func main() {
 	cheatResults["Z"] = WIN
 
 	var partOneResults Result
+	// var partTwoResults Result
 	// for each line in input file...
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -70,6 +76,8 @@ func main() {
 		myShape := shapes[1]
 		// add the result
 		partOneResults = partOneResults + duel(shapeRules[theirShape], shapeRules[myShape])
+		// TODO
+		// partTwoResults = partTwoResults + evalPartTwo(shapeRules[theirShape], shapeRules, cheatResults)
 	}
 
 	// errors?
