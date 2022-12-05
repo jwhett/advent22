@@ -25,7 +25,6 @@ const (
 	LOSE, DRAW, WIN       Result = 0, 3, 6 // Result values
 )
 
-// duel returns the result of two Rules.
 func duel(theirShape, myShape Rule) Result {
 	switch {
 	case theirShape.LosesTo == myShape.Shape:
@@ -37,9 +36,18 @@ func duel(theirShape, myShape Rule) Result {
 	}
 }
 
-func evalPartTwo(theirShape Rule, rules ShapeRules, cheats CheatResults) Result {
-	// TODO
-	return WIN
+func evalPartTwo(theirShape Rule, myShape string, cheats CheatResults) Result {
+	switch cheats[myShape] {
+	case WIN:
+		// pick the winning shape
+		return Result(theirShape.LosesTo) + WIN
+	case LOSE:
+		// pick the losing shape
+		return Result(theirShape.Beats) + LOSE
+	default:
+		// draw
+		return Result(theirShape.Shape) + DRAW
+	}
 }
 
 func main() {
@@ -66,7 +74,7 @@ func main() {
 	cheatResults["Z"] = WIN
 
 	var partOneResults Result
-	// var partTwoResults Result
+	var partTwoResults Result
 	// for each line in input file...
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -74,10 +82,9 @@ func main() {
 		shapes := strings.Split(scanner.Text(), " ")
 		theirShape := shapes[0]
 		myShape := shapes[1]
-		// add the result
+		// add the results
 		partOneResults = partOneResults + duel(shapeRules[theirShape], shapeRules[myShape])
-		// TODO
-		// partTwoResults = partTwoResults + evalPartTwo(shapeRules[theirShape], shapeRules, cheatResults)
+		partTwoResults = partTwoResults + evalPartTwo(shapeRules[theirShape], myShape, cheatResults)
 	}
 
 	// errors?
@@ -86,4 +93,5 @@ func main() {
 	}
 
 	fmt.Printf("// Part 1 results: %d\n", partOneResults)
+	fmt.Printf("// Part 2 results: %d\n", partTwoResults)
 }
