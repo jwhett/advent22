@@ -2,20 +2,33 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"os"
+	"strings"
 )
 
 const (
-	inputFile = "input"
+	inputFile  = "input"
+	priorities = "!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 )
+
+// TODO Structs?
+// Maybe a struct to hold each inventory. Like,
+// type Inventory struct { Inv (the combined inv), firstHalf, secondHalf }
+// then maybe the following become methods on Inventory.
 
 // Split will split a given string in half
 // and return the two halves.
 func Split(line string) (front, back string) {
 	// TODO
 	// split at len(line)/2
+	return
+}
+
+// Unique will take a string and return
+// a string with only the unique values.
+func Unique(line string) (unique string) {
+	// TODO
 	return
 }
 
@@ -37,24 +50,33 @@ func main() {
 	}
 	defer file.Close()
 
-	priorities := []byte("!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
 	// for each line in input file...
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		// TODO
+		// TODO Option 1
 		// Split() the input line
+		// Unique() both halves, less to search
 		// FindDupe()
-		// Increment the priority tracker
+		// Increment the priority tracker by
+		//+ priority of dupe found
 	}
 
-	// Testing
-	indexOfa := bytes.IndexByte(priorities, byte('a'))
-	indexOfA := bytes.IndexByte(priorities, byte('A'))
-	fmt.Printf("Index of a: %d\nIndex of A: %d\n", indexOfa, indexOfA)
+	// TODO Option 2
+	// Instead of loop above, we could read
+	// parse the inventories in a goroutine
+	// and have a channel that takes the
+	// priority of the duplicate item.
 
 	// errors?
 	if err := scanner.Err(); err != nil {
 		fmt.Println(err)
 	}
+
+	// TODO Testing
+	// This looks useful. Though maybe we could use
+	// strings.IndexFunc(s, f()) instead and pack the
+	// logic into f().
+	indexOfa := strings.Index(priorities, "a")
+	indexOfA := strings.Index(priorities, "A")
+	fmt.Printf("Index of a: %d\nIndex of A: %d\n", indexOfa, indexOfA)
 }
