@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -20,26 +21,38 @@ const (
 // Split will split a given string in half
 // and return the two halves.
 func Split(line string) (front, back string) {
-	// TODO
-	// split at len(line)/2
+	front = line[:len(line)/2]
+	back = line[len(line)/2:]
 	return
 }
 
 // Unique will take a string and return
 // a string with only the unique values.
 func Unique(line string) (unique string) {
-	// TODO
+	for _, c := range line {
+		if !strings.ContainsRune(unique, c) {
+			unique = unique + string(c)
+		}
+	}
 	return
 }
 
 // FindDupe will find and return the
-// character that appears in both strings.
-func FindDupe(first, second string) (found byte, err error) {
-	// TODO
-	// error on no match? or empty/nil instead?
-	// sort the strings?
-	// for i in first, attempt match against j in second?
-	return
+// rune that appears in both strings.
+func FindDupe(first, second string) (rune, error) {
+	var found rune
+	if len(first) == 0 {
+		return found, errors.New("Empty list")
+	} else if len(second) == 0 {
+		return found, errors.New("Empty list")
+	}
+	for _, c := range first {
+		if strings.Contains(first, string(c)) {
+			found = c
+			break
+		}
+	}
+	return found, nil
 }
 
 func main() {
