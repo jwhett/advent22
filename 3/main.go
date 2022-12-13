@@ -45,6 +45,16 @@ func Process(line string) (dupe rune) {
 	return
 }
 
+func ProcessPartTwo(lines []string) (badgePriority int) {
+	for _, c := range lines[0] {
+		if strings.ContainsRune(lines[1], c) && strings.ContainsRune(lines[2], c) {
+			badgePriority = strings.IndexRune(priorities, c)
+			break
+		}
+	}
+	return
+}
+
 func main() {
 	file, err := os.Open(inputFile)
 	if err != nil {
@@ -53,9 +63,22 @@ func main() {
 	defer file.Close()
 
 	var totalPriority int
+	var badgePriority int
+	var line string
+
+	lines := make([]string, 0)
 	scanner := bufio.NewScanner(file)
+
 	for scanner.Scan() {
-		totalPriority = totalPriority + strings.IndexRune(priorities, Process(scanner.Text()))
+		line = scanner.Text()
+		// part 1
+		totalPriority = totalPriority + strings.IndexRune(priorities, Process(line))
+		// part 2
+		lines = append(lines, line)
+		if len(lines) == 3 {
+			badgePriority = badgePriority + ProcessPartTwo(lines)
+			lines = make([]string, 0)
+		}
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -63,4 +86,5 @@ func main() {
 	}
 
 	fmt.Printf("Total priority: %d\n", totalPriority)
+	fmt.Printf("Badge priority: %d\n", badgePriority)
 }
