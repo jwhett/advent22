@@ -39,11 +39,12 @@ func (p Pair) FullyRedundantWorkDuty() bool {
 }
 
 // PartiallyRedundantWorkDuty will return true when either Duty
-// overlaps partially overlaps the other. Note: this is not
-// include fully redundant work duties.
+// overlaps partially overlaps the other.
 func (p Pair) PartiallyRedundantWorkDuty() bool {
 	// There's surely a better way to do this.
 	switch {
+	case p.FullyRedundantWorkDuty():
+		return true
 	case p.First.Start <= p.Second.Start && p.First.Stop >= p.Second.Start:
 		return true
 	case p.Second.Start <= p.First.Start && p.Second.Stop >= p.First.Stop:
@@ -80,5 +81,4 @@ func main() {
 	fmt.Printf("Out of %d work duties, there are:\n", dutyCounter)
 	fmt.Printf("- Fully redundant work duties: %d\n", fullyRedundantCounter)
 	fmt.Printf("- Partially redundant work duties: %d\n", partiallyRedundantCounter)
-	fmt.Printf("- Total redundant work duties: %d\n", fullyRedundantCounter+partiallyRedundantCounter)
 }
