@@ -22,9 +22,9 @@ type Pair struct {
 	First, Second Duty
 }
 
-// RedundantWorkDuty will return true when either Duty
+// FullyRedundantWorkDuty will return true when either Duty
 // fully contians the other.
-func RedundantWorkDuty(p Pair) bool {
+func (p Pair) FullyRedundantWorkDuty() bool {
 	// There's surely a better way to do this.
 	switch {
 	case p.First.Start <= p.Second.Start && p.First.Stop >= p.Second.Stop:
@@ -38,6 +38,21 @@ func RedundantWorkDuty(p Pair) bool {
 	}
 }
 
+// PartiallyRedundantWorkDuty will return true when either Duty
+// overlaps partially overlaps the other. Note: this is not
+// include fully redundant work duties.
+func (p Pair) PartiallyRedundantWorkDuty() bool {
+	// There's surely a better way to do this.
+	switch {
+	case p.First.Start <= p.Second.Start && p.First.Stop >= p.Second.Start:
+		return true
+	case p.Second.Start <= p.First.Start && p.Second.Stop >= p.First.Stop:
+		return true
+	default:
+		return false
+	}
+}
+
 func main() {
 	file, err := os.Open(inputFile)
 	if err != nil {
@@ -45,7 +60,7 @@ func main() {
 	}
 	defer file.Close()
 
-	var counter int
+	var dutyCounter, fullyRedundantCounter, partiallyRedundantCounter int
 	var first, second Duty
 	for {
 		if _, err := fmt.Fscanf(file, "%d-%d,%d-%d\n", &first.Start, &first.Stop, &second.Start, &second.Stop); err == io.EOF {
@@ -53,9 +68,17 @@ func main() {
 			break
 		}
 
-		if RedundantWorkDuty(Pair{first, second}) {
-			counter++
+		p := Pair{first, second}
+		if p.FullyRedundantWorkDuty() {
+			fullyRedundantCounter++
 		}
+		if p.PartiallyRedundantWorkDuty() {
+			partiallyRedundantCounter++
+		}
+		dutyCounter++
 	}
-	fmt.Printf("Count of fully redundant work duties: %d\n", counter)
+	fmt.Printf("Out of %d work duties, there are:\n", dutyCounter)
+	fmt.Printf("- Fully redundant work duties: %d\n", fullyRedundantCounter)
+	fmt.Printf("- Partially redundant work duties: %d\n", partiallyRedundantCounter)
+	fmt.Printf("- Total redundant work duties: %d\n", fullyRedundantCounter+partiallyRedundantCounter)
 }
