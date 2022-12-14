@@ -81,4 +81,7 @@ func main() {
 	fmt.Printf("Out of %d work duties, there are:\n", dutyCounter)
 	fmt.Printf("- Fully redundant work duties: %d\n", fullyRedundantCounter)
 	fmt.Printf("- Partially redundant work duties: %d\n", partiallyRedundantCounter)
+	if fullyRedundantCounter+partiallyRedundantCounter > dutyCounter {
+		fmt.Fprintln(os.Stderr, "[Error] - Combined counts exceed total number of duties in input!")
+	}
 }
