@@ -15,6 +15,7 @@ func TestFullyRedundantWorkDuty(t *testing.T) {
 		{Pair{Duty{2, 8}, Duty{3, 7}}, true},
 		{Pair{Duty{6, 6}, Duty{4, 6}}, true},
 		{Pair{Duty{2, 6}, Duty{4, 8}}, false},
+		{Pair{Duty{4, 6}, Duty{2, 5}}, false},
 	}
 
 	for _, test := range tests {
@@ -32,6 +33,7 @@ func TestPartiallyRedundantWorkDuty(t *testing.T) {
 		{Pair{Duty{2, 8}, Duty{3, 7}}, true},
 		{Pair{Duty{6, 6}, Duty{4, 6}}, true},
 		{Pair{Duty{2, 6}, Duty{4, 8}}, true},
+		{Pair{Duty{4, 6}, Duty{2, 5}}, true},
 	}
 
 	for _, test := range tests {
