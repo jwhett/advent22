@@ -3,12 +3,25 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 )
 
 const (
 	inputFile = "input"
 )
+
+type Stack []rune
+
+type Move struct {
+	Count, From, To int
+}
+
+func ScanInput(r io.Reader) (s []Stack, m []Move) {
+	s = make([]Stack, 0)
+	m = make([]Move, 0)
+	return
+}
 
 func main() {
 	file, err := os.Open(inputFile)
