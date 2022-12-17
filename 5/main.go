@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"unicode"
 )
 
 const (
@@ -47,18 +48,21 @@ type InputReader struct {
 // ParseMap will parse the ASCII art map showing
 // the location of all crates. This results in
 // a full set of Stacks.
-func (ir InputReader) ParseMap() Stacks {
-	buffer := make([]byte, mapLength)
-	stacks := make(Stacks, mapCols)
-	for i := 1; i < mapHeight; i++ {
+func (ir InputReader) ParseMap(length, height, cols int) Stacks {
+	buffer := make([]byte, length)
+	stacks := make(Stacks, cols)
+	for i := 1; i <= height; i++ {
+		// read a full line length into our buffer
 		_, err := ir.Read(buffer)
 		if err != nil {
 			fmt.Println(err)
 		}
-		// TODO: Parse every 4 bytes as a crate
-		// and insert at the head of each Stack
-		// because we're reading this from the
-		// top down.
+		for _, c := range buffer {
+			// only want the letters; CrateIDs
+			if unicode.IsLetter(rune(c)) {
+				stacks[i] = append([]CrateID{CrateID(c)}, stacks[i]...)
+			}
+		}
 	}
 	return stacks
 }

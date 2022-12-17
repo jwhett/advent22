@@ -6,7 +6,8 @@ import (
 	"testing"
 )
 
-const testInput = `
+const (
+	testInput = `
     [D]    
 [N] [C]    
 [Z] [M] [P]
@@ -17,6 +18,10 @@ move 3 from 1 to 3
 move 2 from 2 to 1
 move 1 from 1 to 2
 `
+	testMapLength = 12
+	testMapHeight = 3
+	testMapCols   = 9
+)
 
 // PrepareTestInput wraps the testInput in an
 // io.Reader for consumption.
@@ -24,13 +29,13 @@ func PrepareTestInput() io.Reader {
 	return strings.NewReader(testInput)
 }
 
-func TestScanInput(t *testing.T) {
+func TestParseMap(t *testing.T) {
 	inReader := PrepareTestInput()
-	stacks, moves := ScanInput(inReader)
+	ir := InputReader{inReader}
+	stacks := ir.ParseMap(testMapLength, testMapHeight, testMapCols)
 	if len(stacks) != 3 {
 		t.Errorf("Wrong number of stacks collected. Wanted 3 got %d", len(stacks))
-	}
-	if len(moves) != 4 {
-		t.Errorf("Wrong number of moves collected. Wanted 4 got %d", len(stacks))
+	} else {
+		t.Logf("Passed: %+v", stacks)
 	}
 }
