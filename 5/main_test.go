@@ -33,9 +33,16 @@ func TestParseMap(t *testing.T) {
 	inReader := PrepareTestInput()
 	ir := InputReader{inReader}
 	stacks := ir.ParseMap(testMapLength, testMapHeight, testMapCols)
+	// Ensure we receive the proper number of stacks from
+	// the ASCII map.
 	if len(stacks) != testMapCols {
 		t.Errorf("Wrong number of stacks collected. Wanted 3 got %d\n-> %v", len(stacks), stacks)
-	} else {
-		t.Logf("Passed: %+v", stacks)
+	}
+	// Ensure we have creates in the right order.
+	bottomRow := []rune{'Z', 'M', 'P'}
+	for stackCount, rowCount := 1, 0; stackCount < len(stacks); stackCount, rowCount = stackCount+1, rowCount+1 {
+		if stacks[stackCount][0] != CrateID(bottomRow[rowCount]) {
+			t.Errorf("Crate in the wrong place. Got %q, expected %q", stacks[stackCount][0], bottomRow[rowCount])
+		}
 	}
 }
