@@ -20,7 +20,7 @@ move 1 from 1 to 2
 `
 	testMapLength = 12
 	testMapHeight = 3
-	testMapCols   = 9
+	testMapCols   = 3
 )
 
 // PrepareTestInput wraps the testInput in an
@@ -33,8 +33,8 @@ func TestParseMap(t *testing.T) {
 	inReader := PrepareTestInput()
 	ir := InputReader{inReader}
 	stacks := ir.ParseMap(testMapLength, testMapHeight, testMapCols)
-	if len(stacks) != 3 {
-		t.Errorf("Wrong number of stacks collected. Wanted 3 got %d", len(stacks))
+	if len(stacks) != testMapCols {
+		t.Errorf("Wrong number of stacks collected. Wanted 3 got %d\n-> %v", len(stacks), stacks)
 	} else {
 		t.Logf("Passed: %+v", stacks)
 	}

@@ -48,23 +48,54 @@ type InputReader struct {
 // ParseMap will parse the ASCII art map showing
 // the location of all crates. This results in
 // a full set of Stacks.
-func (ir InputReader) ParseMap(length, height, cols int) Stacks {
-	buffer := make([]byte, length)
-	stacks := make(Stacks, cols)
-	for i := 1; i <= height; i++ {
-		// read a full line length into our buffer
-		_, err := ir.Read(buffer)
-		if err != nil {
-			fmt.Println(err)
+func (ir InputReader) ParseMap(mapLength, mapHeight, mapCols int) (stacks Stacks) {
+	const crateWidth = 4
+	maxStackLength := mapHeight
+	stacks = make(Stacks)
+	// initialize the stacks
+	for i := 1; i <= mapCols; i++ {
+		stacks[i] = make(Stack, maxStackLength)
+	}
+
+	// scan rows top to bottom
+	row := maxStackLength - 1
+	scanner := bufio.NewScanner(ir)
+	// for each row of the ASCII map of crates...
+ScannerLoop:
+	for scanner.Scan() {
+		fmt.Printf("On row %d\n", row)
+		line := scanner.Text()
+		if len(line) == 0 {
+			fmt.Println("Empty line.. Next!")
+			continue
 		}
-		for _, c := range buffer {
-			// only want the letters; CrateIDs
-			if unicode.IsLetter(rune(c)) {
-				stacks[i] = append([]CrateID{CrateID(c)}, stacks[i]...)
+		for cursorPosition, column := 0, 1; cursorPosition < mapLength; cursorPosition, column = cursorPosition+crateWidth, column+1 {
+			fmt.Printf("Attempting range [%d:%d]...\n", cursorPosition, cursorPosition+crateWidth)
+			// look for a crate at a given slice of the row..
+			var substring string
+			if cursorPosition+crateWidth >= len(line)-1 {
+				substring = line[cursorPosition:]
+			} else {
+				substring = line[cursorPosition : cursorPosition+crateWidth]
+			}
+			for _, c := range substring {
+				// store the crate ID if we find one in this slice!
+				if unicode.IsLetter(c) {
+					fmt.Printf("Found crate: %q\n", string(c))
+					fmt.Printf("Attempting to store in [%d][%d] which looks like %v\n", column, row, stacks[column])
+					stacks[column][row] = CrateID(c)
+					// found the crate in this range
+					break
+				}
 			}
 		}
+		// descending; decrement our row counter/location
+		row--
+		if row < 0 {
+			break ScannerLoop
+		}
 	}
-	return stacks
+	return
 }
 
 // ScanInput is the entrypoint for parsing the input
