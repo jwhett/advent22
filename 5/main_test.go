@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"io"
 	"strings"
 	"testing"
@@ -31,7 +32,7 @@ func PrepareTestInput() io.Reader {
 
 func TestParseMap(t *testing.T) {
 	inReader := PrepareTestInput()
-	ir := InputReader{inReader}
+	ir := NewInputReader(bufio.NewScanner(inReader))
 	stacks := ir.ParseMap(MapDimensions{testMapLength, testMapHeight, testMapCols})
 	// Ensure we receive the proper number of stacks from
 	// the ASCII map.
@@ -48,7 +49,7 @@ func TestParseMap(t *testing.T) {
 }
 
 func TestParseMoves(t *testing.T) {
-	ir := InputReader{PrepareTestInput()}
+	ir := NewInputReader(bufio.NewScanner(PrepareTestInput()))
 	count, moves := ir.ParseMoves()
 	if count == 0 {
 		t.Error("Failed to parse moves from the test input.")
@@ -67,8 +68,7 @@ func TestParseMoves(t *testing.T) {
 }
 
 func TestScanInput(t *testing.T) {
-	ir := InputReader{PrepareTestInput()}
-	stacks, moves, err := ScanInput(ir, MapDimensions{testMapLength, testMapHeight, testMapCols})
+	stacks, moves, err := ScanInput(PrepareTestInput(), MapDimensions{testMapLength, testMapHeight, testMapCols})
 	if err != nil {
 		t.Errorf("Got an error when scanning test input: %v", err)
 	}

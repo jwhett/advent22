@@ -44,7 +44,11 @@ type Moves []Move
 // InputReader wraps an io.Reader to perform
 // input-specific parsing of that io.Reader.
 type InputReader struct {
-	io.Reader
+	*bufio.Scanner
+}
+
+func NewInputReader(scanner *bufio.Scanner) *InputReader {
+	return &InputReader{scanner}
 }
 
 type MapDimensions struct {
@@ -67,11 +71,10 @@ func (ir InputReader) ParseMap(md MapDimensions) (stacks Stacks) {
 
 	// scan rows top to bottom
 	row := maxStackLength - 1
-	scanner := bufio.NewScanner(ir)
 	// for each row of the ASCII map of crates...
 ScannerLoop:
-	for scanner.Scan() {
-		line := scanner.Text()
+	for ir.Scan() {
+		line := ir.Text()
 		if len(line) == 0 {
 			// empty line
 			continue
@@ -108,10 +111,9 @@ ScannerLoop:
 func (ir InputReader) ParseMoves() (moveCount int, moves Moves) {
 	moveCount = 0
 	moves = make(Moves, 0)
-	scanner := bufio.NewScanner(ir)
 	var count, from, to int
-	for scanner.Scan() {
-		line := scanner.Text()
+	for ir.Scan() {
+		line := ir.Text()
 		if !strings.HasPrefix(line, "move") {
 			// not a move instruction
 			continue
@@ -127,7 +129,7 @@ func (ir InputReader) ParseMoves() (moveCount int, moves Moves) {
 // file for the puzzle.
 func ScanInput(r io.Reader, md MapDimensions) (stacks Stacks, moves Moves, err error) {
 	var count int
-	ir := InputReader{r}
+	ir := NewInputReader(bufio.NewScanner(r))
 	stacks = ir.ParseMap(md)
 	count, moves = ir.ParseMoves()
 	if count == 0 {
@@ -143,12 +145,4 @@ func main() {
 	}
 	defer file.Close()
 
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		// line = scanner.Text()
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Printf("Scanner error: %v", err)
-	}
 }
