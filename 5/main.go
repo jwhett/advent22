@@ -145,4 +145,9 @@ func main() {
 	}
 	defer file.Close()
 
+	stacks, moves, err := ScanInput(bufio.NewReader(file), MapDimensions{mapLength, mapHeight, mapCols})
+	if err != nil {
+		fmt.Printf("Got an error scanning input: %v", err)
+	}
+	fmt.Printf("stacks: %+v\nmoves: %+v\n", stacks, moves)
 }
