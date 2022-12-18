@@ -147,6 +147,11 @@ func ScanInput(r io.Reader, md MapDimensions) (stacks Stacks, moves Moves, err e
 	return
 }
 
+type Mover struct {
+	Stacks
+	Moves
+}
+
 func main() {
 	file, err := os.Open(inputFile)
 	if err != nil {
@@ -158,5 +163,7 @@ func main() {
 	if err != nil {
 		fmt.Printf("Got an error scanning input: %v", err)
 	}
-	fmt.Printf("stacks: %+v\nmoves: %+v\n", stacks, moves)
+
+	mover := Mover{stacks, moves}
+	fmt.Printf("First stack: %+v\nFirst move: %+v\n", mover.Stacks[1], mover.Moves[0])
 }
