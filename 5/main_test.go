@@ -46,3 +46,22 @@ func TestParseMap(t *testing.T) {
 		}
 	}
 }
+
+func TestParseMoves(t *testing.T) {
+	ir := InputReader{PrepareTestInput()}
+	count, moves := ir.ParseMoves()
+	if count == 0 {
+		t.Error("Failed to parse moves from the test input.")
+	}
+	testMoves := Moves{
+		{1, 2, 1},
+		{3, 1, 3},
+		{2, 2, 1},
+		{1, 1, 2},
+	}
+	for i, move := range moves {
+		if move != testMoves[i] {
+			t.Errorf("Unexpected move found! Got %+v, wanted %+v\n", move, testMoves[i])
+		}
+	}
+}

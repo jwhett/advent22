@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"unicode"
 )
 
@@ -90,6 +91,27 @@ ScannerLoop:
 		if row < 0 {
 			break ScannerLoop
 		}
+	}
+	return
+}
+
+// ParseMoves will parse the io.Reader for move instructions and return the
+// number of moves that were read as well as the list of moves. It is expected
+// that moveCount is greater than zero on a successful parse.
+func (ir InputReader) ParseMoves() (moveCount int, moves Moves) {
+	moveCount = 0
+	moves = make(Moves, 0)
+	scanner := bufio.NewScanner(ir)
+	var count, from, to int
+	for scanner.Scan() {
+		line := scanner.Text()
+		if !strings.HasPrefix(line, "move") {
+			// not a move instruction
+			continue
+		}
+		fmt.Sscanf(line, "move %d from %d to %d", &count, &from, &to)
+		moves = append(moves, Move{count, from, to})
+		moveCount++
 	}
 	return
 }
