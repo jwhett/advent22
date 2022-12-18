@@ -32,7 +32,7 @@ func PrepareTestInput() io.Reader {
 func TestParseMap(t *testing.T) {
 	inReader := PrepareTestInput()
 	ir := InputReader{inReader}
-	stacks := ir.ParseMap(testMapLength, testMapHeight, testMapCols)
+	stacks := ir.ParseMap(MapDimensions{testMapLength, testMapHeight, testMapCols})
 	// Ensure we receive the proper number of stacks from
 	// the ASCII map.
 	if len(stacks) != testMapCols {
@@ -63,5 +63,16 @@ func TestParseMoves(t *testing.T) {
 		if move != testMoves[i] {
 			t.Errorf("Unexpected move found! Got %+v, wanted %+v\n", move, testMoves[i])
 		}
+	}
+}
+
+func TestScanInput(t *testing.T) {
+	ir := InputReader{PrepareTestInput()}
+	stacks, moves, err := ScanInput(ir, MapDimensions{testMapLength, testMapHeight, testMapCols})
+	if err != nil {
+		t.Errorf("Got an error when scanning test input: %v", err)
+	}
+	if len(stacks) != 3 && len(moves) != 4 {
+		t.Errorf("Unexpected number of stacks or moves parsed.\nStacks: Got %d, wanted 3\nMoves: Got %d, wanted 4\n", len(stacks), len(moves))
 	}
 }

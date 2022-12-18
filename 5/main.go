@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -46,15 +47,21 @@ type InputReader struct {
 	io.Reader
 }
 
+type MapDimensions struct {
+	MapLength int
+	MapHeight int
+	MapCols   int
+}
+
 // ParseMap will parse the ASCII art map showing
 // the location of all crates. This results in
 // a full set of Stacks.
-func (ir InputReader) ParseMap(mapLength, mapHeight, mapCols int) (stacks Stacks) {
+func (ir InputReader) ParseMap(md MapDimensions) (stacks Stacks) {
 	const crateWidth = 4
-	maxStackLength := mapHeight
+	maxStackLength := md.MapHeight
 	stacks = make(Stacks)
 	// initialize the stacks
-	for i := 1; i <= mapCols; i++ {
+	for i := 1; i <= md.MapCols; i++ {
 		stacks[i] = make(Stack, maxStackLength)
 	}
 
@@ -69,7 +76,7 @@ ScannerLoop:
 			// empty line
 			continue
 		}
-		for cursorPosition, column := 0, 1; cursorPosition < mapLength; cursorPosition, column = cursorPosition+crateWidth, column+1 {
+		for cursorPosition, column := 0, 1; cursorPosition < md.MapLength; cursorPosition, column = cursorPosition+crateWidth, column+1 {
 			// look for a crate at a given slice of the row..
 			var substring string
 			if cursorPosition+crateWidth >= len(line)-1 {
@@ -118,10 +125,14 @@ func (ir InputReader) ParseMoves() (moveCount int, moves Moves) {
 
 // ScanInput is the entrypoint for parsing the input
 // file for the puzzle.
-func ScanInput(r io.Reader) (s []Stack, m []Move) {
-	s = make([]Stack, 0)
-	m = make([]Move, 0)
-
+func ScanInput(r io.Reader, md MapDimensions) (stacks Stacks, moves Moves, err error) {
+	var count int
+	ir := InputReader{r}
+	stacks = ir.ParseMap(md)
+	count, moves = ir.ParseMoves()
+	if count == 0 {
+		err = errors.New("No moves were parsed.")
+	}
 	return
 }
 
