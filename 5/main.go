@@ -63,14 +63,12 @@ func (ir InputReader) ParseMap(mapLength, mapHeight, mapCols int) (stacks Stacks
 	// for each row of the ASCII map of crates...
 ScannerLoop:
 	for scanner.Scan() {
-		fmt.Printf("On row %d\n", row)
 		line := scanner.Text()
 		if len(line) == 0 {
-			fmt.Println("Empty line.. Next!")
+			// empty line
 			continue
 		}
 		for cursorPosition, column := 0, 1; cursorPosition < mapLength; cursorPosition, column = cursorPosition+crateWidth, column+1 {
-			fmt.Printf("Attempting range [%d:%d]...\n", cursorPosition, cursorPosition+crateWidth)
 			// look for a crate at a given slice of the row..
 			var substring string
 			if cursorPosition+crateWidth >= len(line)-1 {
@@ -81,10 +79,8 @@ ScannerLoop:
 			for _, c := range substring {
 				// store the crate ID if we find one in this slice!
 				if unicode.IsLetter(c) {
-					fmt.Printf("Found crate: %q\n", string(c))
-					fmt.Printf("Attempting to store in [%d][%d] which looks like %v\n", column, row, stacks[column])
-					stacks[column][row] = CrateID(c)
 					// found the crate in this range
+					stacks[column][row] = CrateID(c)
 					break
 				}
 			}
