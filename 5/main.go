@@ -102,6 +102,15 @@ ScannerLoop:
 			break ScannerLoop
 		}
 	}
+	for key, stack := range stacks {
+		filterStack := make(Stack, 0)
+		for _, v := range stack {
+			if v > 0 {
+				filterStack = append(filterStack, v)
+			}
+		}
+		stacks[key] = filterStack
+	}
 	return
 }
 
