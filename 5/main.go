@@ -33,7 +33,7 @@ func main() {
 	}
 
 	mover := df.Mover{Stacks: stacks, Moves: moves}
-	mover.MoveAll()
+	mover.MoveAll(df.Standard)
 
 	// Build the answer
 	var answer string

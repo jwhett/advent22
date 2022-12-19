@@ -92,7 +92,7 @@ func TestMove(t *testing.T) {
 	mover := Mover{stacks, moves}
 
 	// Test a single Move()
-	mover.Move()
+	mover.Move(Standard)
 	lasts := mover.Lasts()
 	testLasts := []CrateID{'D', 'C', 'P'}
 	if lasts[0] != testLasts[0] {
@@ -108,7 +108,7 @@ func TestMoveAll(t *testing.T) {
 
 	// Perform all (remaining) moves
 	mover := Mover{stacks, moves}
-	mover.MoveAll()
+	mover.MoveAll(Standard)
 
 	lasts := mover.Lasts()
 	testLasts := []CrateID{'C', 'M', 'Z'}

@@ -9,6 +9,13 @@ import (
 	"unicode"
 )
 
+type Switch int
+
+const (
+	Standard Switch = iota + 1
+	Stacked
+)
+
 // CrateID represents the rune stamped on each crate.
 type CrateID rune
 
@@ -154,7 +161,16 @@ func (m Mover) Lasts() []CrateID {
 }
 
 // Move performs a single move instruction
-func (m *Mover) Move() {
+func (m *Mover) Move(switchType Switch) {
+	switch switchType {
+	default:
+		m.standardMove()
+	case Standard:
+		m.standardMove()
+	}
+}
+
+func (m *Mover) standardMove() {
 	var move Move
 	var init Stack
 	var last CrateID
@@ -176,12 +192,22 @@ func (m *Mover) Move() {
 	}
 }
 
-// Perform all moves
-func (m *Mover) MoveAll() {
+// Perform all moves based on switchType
+func (m *Mover) MoveAll(switchType Switch) {
+	switch switchType {
+	default:
+		m.moveAllStandard()
+	case Standard:
+		m.moveAllStandard()
+	}
+}
+
+// Perform standard, orderly moves
+func (m *Mover) moveAllStandard() {
 	// len(m.Moves) changes each loop iteration so
 	// we have to save it before starting the loop.
 	maxMoves := len(m.Moves)
 	for i := 0; i < maxMoves; i++ {
-		m.Move()
+		m.Move(Standard)
 	}
 }
