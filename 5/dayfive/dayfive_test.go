@@ -24,6 +24,16 @@ move 1 from 1 to 2
 	testMapCols   = 3
 )
 
+var (
+	inputReader   *InputReader
+	mapDimensions MapDimensions
+)
+
+func init() {
+	inputReader = NewInputReader(bufio.NewScanner(PrepareTestInput()))
+	mapDimensions = MapDimensions{testMapLength, testMapHeight, testMapCols}
+}
+
 // PrepareTestInput wraps the testInput in an
 // io.Reader for consumption.
 func PrepareTestInput() io.Reader {
@@ -31,9 +41,7 @@ func PrepareTestInput() io.Reader {
 }
 
 func TestParseMap(t *testing.T) {
-	inReader := PrepareTestInput()
-	ir := NewInputReader(bufio.NewScanner(inReader))
-	stacks := ir.ParseMap(MapDimensions{testMapLength, testMapHeight, testMapCols})
+	stacks := inputReader.ParseMap(mapDimensions)
 	// Ensure we receive the proper number of stacks from
 	// the ASCII map.
 	if len(stacks) != testMapCols {
@@ -49,8 +57,7 @@ func TestParseMap(t *testing.T) {
 }
 
 func TestParseMoves(t *testing.T) {
-	ir := NewInputReader(bufio.NewScanner(PrepareTestInput()))
-	count, moves := ir.ParseMoves()
+	count, moves := inputReader.ParseMoves()
 	if count == 0 {
 		t.Error("Failed to parse moves from the test input.")
 	}
@@ -68,7 +75,7 @@ func TestParseMoves(t *testing.T) {
 }
 
 func TestScanInput(t *testing.T) {
-	stacks, moves, err := ScanInput(PrepareTestInput(), MapDimensions{testMapLength, testMapHeight, testMapCols})
+	stacks, moves, err := ScanInput(PrepareTestInput(), mapDimensions)
 	if err != nil {
 		t.Errorf("Got an error when scanning test input: %v", err)
 	}
@@ -78,7 +85,7 @@ func TestScanInput(t *testing.T) {
 }
 
 func TestMove(t *testing.T) {
-	stacks, moves, err := ScanInput(PrepareTestInput(), MapDimensions{testMapLength, testMapHeight, testMapCols})
+	stacks, moves, err := ScanInput(PrepareTestInput(), mapDimensions)
 	if err != nil {
 		t.Errorf("Got an error when scanning test input: %v", err)
 	}
