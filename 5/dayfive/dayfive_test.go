@@ -116,3 +116,21 @@ func TestMoveAll(t *testing.T) {
 		t.Errorf("MoveAll didn't result in expected configuration.\nGot: %v, Wanted: %v\nStacks: %+v\n", lasts, testLasts, mover.Stacks)
 	}
 }
+
+func TestMultiMove(t *testing.T) {
+	// same stacks as all other tests, but we are going
+	// to use our own Move to test the movement.
+	stacks, moves, err := ScanInput(PrepareTestInput(), mapDimensions)
+	if err != nil {
+		t.Errorf("Got an error when scanning test input: %v", err)
+	}
+	mover := Mover{stacks, moves}
+	mover.Move(Stacked)
+
+	lasts := mover.Lasts()
+	// This needs to be figured out and is expected to fail for now.
+	testLasts := []CrateID{' ', ' ', ' '}
+	if lasts[0] != testLasts[0] {
+		t.Errorf("Move(Stacked) didn't result in expected configuration.\nGot: %v, Wanted: %v\nStacks: %+v\n", lasts, testLasts, mover.Stacks)
+	}
+}
