@@ -34,4 +34,13 @@ func main() {
 
 	mover := df.Mover{Stacks: stacks, Moves: moves}
 	fmt.Printf("First stack: %+v\nFirst move: %+v\n", mover.Stacks[1], mover.Moves[0])
+
+	mover.MoveAll()
+
+	// Build the answer
+	var answer string
+	for _, last := range mover.Lasts() {
+		answer += string(last)
+	}
+	fmt.Printf("Top of the stacks: %s\n", answer)
 }

@@ -133,7 +133,47 @@ func ScanInput(r io.Reader, md MapDimensions) (stacks Stacks, moves Moves, err e
 	return
 }
 
+// A Mover is in charge of moving.
 type Mover struct {
 	Stacks
 	Moves
+}
+
+// Lasts returns the last crate in each stack.
+func (m Mover) Lasts() []CrateID {
+	lasts := make([]CrateID, 0)
+	for _, stack := range m.Stacks {
+		lasts = append(lasts, stack[len(stack)-1])
+	}
+	return lasts
+}
+
+// Move performs a single move instruction
+func (m *Mover) Move() {
+	var move Move
+	var init Stack
+	var last CrateID
+
+	if len(m.Moves) == 0 {
+		// No moves to perform
+		return
+	}
+
+	move, m.Moves = m.Moves[0], m.Moves[1:]
+	for i := 0; i < move.Count; i++ {
+		if len(m.Stacks[move.From]) == 1 {
+			init, last = make(Stack, 0), m.Stacks[move.From][0]
+		} else {
+			init, last = m.Stacks[move.From][:len(m.Stacks[move.From])-1], m.Stacks[move.From][len(m.Stacks[move.From])-1]
+		}
+		m.Stacks[move.From] = init
+		m.Stacks[move.To] = append(m.Stacks[move.To], last)
+	}
+}
+
+func (m *Mover) MoveAll() {
+	// Perform all moves
+	for i := 0; i < len(m.Moves); i++ {
+		m.Move()
+	}
 }

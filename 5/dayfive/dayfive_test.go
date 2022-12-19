@@ -76,3 +76,19 @@ func TestScanInput(t *testing.T) {
 		t.Errorf("Unexpected number of stacks or moves parsed.\nStacks: Got %d, wanted 3\nMoves: Got %d, wanted 4\n", len(stacks), len(moves))
 	}
 }
+
+func TestMove(t *testing.T) {
+	stacks, moves, err := ScanInput(PrepareTestInput(), MapDimensions{testMapLength, testMapHeight, testMapCols})
+	if err != nil {
+		t.Errorf("Got an error when scanning test input: %v", err)
+	}
+	mover := Mover{stacks, moves}
+
+	// Test a single Move()
+	mover.Move()
+	lasts := mover.Lasts()
+	testLasts := []CrateID{'D', 'C', 'P'}
+	if lasts[0] != testLasts[0] {
+		t.Errorf("Move didn't result in expected configuration.\nGot: %v, Wanted: %v", lasts, testLasts)
+	}
+}
