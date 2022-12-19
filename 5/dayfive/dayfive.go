@@ -9,10 +9,10 @@ import (
 	"unicode"
 )
 
-type Switch int
+type MovementMethod int
 
 const (
-	Standard Switch = iota + 1
+	Standard MovementMethod = iota + 1
 	Stacked
 )
 
@@ -161,8 +161,8 @@ func (m Mover) Lasts() []CrateID {
 }
 
 // Move performs a single move instruction
-func (m *Mover) Move(switchType Switch) {
-	switch switchType {
+func (m *Mover) Move(mm MovementMethod) {
+	switch mm {
 	default:
 		m.standardMove()
 	case Standard:
@@ -192,13 +192,15 @@ func (m *Mover) standardMove() {
 	}
 }
 
-// Perform all moves based on switchType
-func (m *Mover) MoveAll(switchType Switch) {
-	switch switchType {
+// Perform all moves based on mm
+func (m *Mover) MoveAll(mm MovementMethod) {
+	switch mm {
 	default:
 		m.moveAllStandard()
 	case Standard:
 		m.moveAllStandard()
+	case Stacked:
+		m.moveAllStacked()
 	}
 }
 
@@ -209,5 +211,15 @@ func (m *Mover) moveAllStandard() {
 	maxMoves := len(m.Moves)
 	for i := 0; i < maxMoves; i++ {
 		m.Move(Standard)
+	}
+}
+
+// Perform all moves with stacked movement
+func (m *Mover) moveAllStacked() {
+	// len(m.Moves) changes each loop iteration so
+	// we have to save it before starting the loop.
+	maxMoves := len(m.Moves)
+	for i := 0; i < maxMoves; i++ {
+		m.Move(Stacked)
 	}
 }
