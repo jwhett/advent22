@@ -99,3 +99,20 @@ func TestMove(t *testing.T) {
 		t.Errorf("Move didn't result in expected configuration.\nGot: %v, Wanted: %v", lasts, testLasts)
 	}
 }
+
+func TestMoveAll(t *testing.T) {
+	stacks, moves, err := ScanInput(PrepareTestInput(), mapDimensions)
+	if err != nil {
+		t.Errorf("Got an error when scanning test input: %v", err)
+	}
+
+	// Perform all (remaining) moves
+	mover := Mover{stacks, moves}
+	mover.MoveAll()
+
+	lasts := mover.Lasts()
+	testLasts := []CrateID{'C', 'M', 'Z'}
+	if lasts[0] != testLasts[0] {
+		t.Errorf("MoveAll didn't result in expected configuration.\nGot: %v, Wanted: %v\nStacks: %+v\n", lasts, testLasts, mover.Stacks)
+	}
+}

@@ -142,7 +142,12 @@ type Mover struct {
 // Lasts returns the last crate in each stack.
 func (m Mover) Lasts() []CrateID {
 	lasts := make([]CrateID, 0)
-	for i := 1; i < len(m.Stacks); i++ {
+	for i := 1; i <= len(m.Stacks); i++ {
+		if len(m.Stacks[i]) == 0 {
+			// This stack is empty.
+			lasts = append(lasts, CrateID(' '))
+			continue
+		}
 		lasts = append(lasts, m.Stacks[i][len(m.Stacks[i])-1])
 	}
 	return lasts
@@ -171,9 +176,12 @@ func (m *Mover) Move() {
 	}
 }
 
+// Perform all moves
 func (m *Mover) MoveAll() {
-	// Perform all moves
-	for i := 0; i < len(m.Moves); i++ {
+	// len(m.Moves) changes each loop iteration so
+	// we have to save it before starting the loop.
+	maxMoves := len(m.Moves)
+	for i := 0; i < maxMoves; i++ {
 		m.Move()
 	}
 }
