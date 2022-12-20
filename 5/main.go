@@ -20,6 +20,17 @@ const (
 	mapCols = 9
 )
 
+var movementMethod string
+
+func init() {
+	var ok bool
+	if movementMethod, ok = os.LookupEnv("MOVEMENT_METHOD"); !ok {
+		movementMethod = "standard"
+	} else {
+		movementMethod = "stacked"
+	}
+}
+
 func main() {
 	file, err := os.Open(inputFile)
 	if err != nil {
@@ -33,7 +44,14 @@ func main() {
 	}
 
 	mover := df.Mover{Stacks: stacks, Moves: moves}
-	mover.MoveAll(df.Standard)
+	switch movementMethod {
+	default:
+		mover.MoveAll(df.Standard)
+	case string(df.Standard):
+		mover.MoveAll(df.Standard)
+	case string(df.Stacked):
+		mover.MoveAll(df.Stacked)
+	}
 
 	// Build the answer
 	var answer string

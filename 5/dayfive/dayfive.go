@@ -9,11 +9,11 @@ import (
 	"unicode"
 )
 
-type MovementMethod int
+type MovementMethod string
 
 const (
-	Standard MovementMethod = iota + 1
-	Stacked
+	Standard MovementMethod = "standard"
+	Stacked  MovementMethod = "stacked"
 )
 
 // CrateID represents the rune stamped on each crate.
