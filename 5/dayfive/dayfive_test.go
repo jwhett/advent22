@@ -27,17 +27,37 @@ move 1 from 1 to 2
 var (
 	inputReader   *InputReader
 	mapDimensions MapDimensions
+	helperSlice   []int
 )
 
 func init() {
 	inputReader = NewInputReader(bufio.NewScanner(PrepareTestInput()))
 	mapDimensions = MapDimensions{testMapLength, testMapHeight, testMapCols}
+	helperSlice = []int{1, 2, 3, 4, 5}
 }
 
 // PrepareTestInput wraps the testInput in an
 // io.Reader for consumption.
 func PrepareTestInput() io.Reader {
 	return strings.NewReader(testInput)
+}
+
+func TestPop(t *testing.T) {
+	if first, rest := Pop(helperSlice); first != 1 || rest[0] != 2 {
+		t.Errorf("Pop failed. Expected first: 1, got %d. Expected rest: [2 3 4 5], got %v\n", first, rest)
+	}
+}
+
+func TestLast(t *testing.T) {
+	if init, last := Last(helperSlice); init[0] != 1 || last != 5 {
+		t.Errorf("Pop failed. Expected init: [1 2 3 4], got %v. Expected last: 5, got %d\n", init, last)
+	}
+}
+
+func TestTakeN(t *testing.T) {
+	if remaining, taken := TakeN(2, helperSlice); remaining[0] != 1 || taken[0] != 4 {
+		t.Errorf("Pop failed. Expected remaining: [1 2 3], got %v. Expected taken: [4 5], got %v\n", remaining, taken)
+	}
 }
 
 func TestParseMap(t *testing.T) {
@@ -125,11 +145,10 @@ func TestMultiMove(t *testing.T) {
 		t.Errorf("Got an error when scanning test input: %v", err)
 	}
 	mover := Mover{stacks, moves}
-	mover.Move(Stacked)
+	mover.MoveAll(Stacked)
 
 	lasts := mover.Lasts()
-	// This needs to be figured out and is expected to fail for now.
-	testLasts := []CrateID{' ', ' ', ' '}
+	testLasts := []CrateID{'M', 'C', 'D'}
 	if lasts[0] != testLasts[0] {
 		t.Errorf("Move(Stacked) didn't result in expected configuration.\nGot: %v, Wanted: %v\nStacks: %+v\n", lasts, testLasts, mover.Stacks)
 	}
