@@ -42,4 +42,13 @@ func TestSliceEqual(t *testing.T) {
 		t.Error("Equal slices failed to match.")
 	}
 
+	failIntContent := []int{2, 3, 4, 5, 6}
+	if SliceEqual(first, failIntContent) {
+		t.Error("Different slices with equal length matched.")
+	}
+	failIntLength := []int{1, 2, 3}
+	if SliceEqual(first, failIntLength) {
+		t.Error("Slices with different lengths matched.")
+	}
+
 }
