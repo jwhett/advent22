@@ -25,3 +25,30 @@ func TestTakeN(t *testing.T) {
 		t.Errorf("Pop failed. Expected remaining: [1 2 3], got %v. Expected taken: [4 5], got %v\n", remaining, taken)
 	}
 }
+
+func TestSliceEqual(t *testing.T) {
+	// Setup our vars two ways. First from
+	// a []int literal, second by appending
+	// elements to an initially empty slice.
+	first := []int{1, 2, 3, 4, 5}
+	second := make([]int, 0)
+	for i := 1; i < 6; i++ {
+		second = append(second, i)
+	}
+
+	firstString, secondString := []string{"one", "two"}, []string{"one", "two"}
+	firstFloat, secondFloat := []float32{1.2, 3.4, 5.6}, []float32{1.2, 3.4, 5.6}
+	if !SliceEqual(first, second) || !SliceEqual(firstString, secondString) || !SliceEqual(firstFloat, secondFloat) {
+		t.Error("Equal slices failed to match.")
+	}
+
+	failIntContent := []int{2, 3, 4, 5, 6}
+	if SliceEqual(first, failIntContent) {
+		t.Error("Different slices with equal length matched.")
+	}
+	failIntLength := []int{1, 2, 3}
+	if SliceEqual(first, failIntLength) {
+		t.Error("Slices with different lengths matched.")
+	}
+
+}

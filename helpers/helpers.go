@@ -1,5 +1,23 @@
 package helpers
 
+import "golang.org/x/exp/constraints"
+
+// SliceEqual does the same as the above, but
+// isn't restricted to just ints.
+func SliceEqual[V constraints.Ordered](first, second []V) bool {
+	// slices that differ in length are not equal
+	if len(first) != len(second) {
+		return false
+	}
+	// check each item for equality in order
+	for i := 0; i < len(first); i++ {
+		if first[i] != second[i] {
+			return false
+		}
+	}
+	return true
+}
+
 // Pop removes and returns the first element in a
 // slice and the rest of the slice.
 func Pop[T any](collection []T) (head T, tail []T) {
