@@ -26,19 +26,19 @@ func TestTransmissionBitIdentification(t *testing.T) {
 	tests := []struct {
 		Freq           string
 		ExpectedMarker string
-		ExpectedCount  int
+		ExpectedIndex  int
 	}{
-		{Freq: "", ExpectedMarker: "", ExpectedCount: -1},
-		{Freq: "aabbccddeeffgghhiijjkkllmmnn", ExpectedMarker: "", ExpectedCount: -1},
-		{Freq: "bvwbjplbgvbhsrlpgdmjqwftvncz", ExpectedMarker: "vwbj", ExpectedCount: 5},
-		{Freq: "nppdvjthqldpwncqszvftbrmjlhg", ExpectedMarker: "pdvj", ExpectedCount: 6},
-		{Freq: "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", ExpectedMarker: "fntj", ExpectedCount: 10},
-		{Freq: "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", ExpectedMarker: "qfrl", ExpectedCount: 11},
+		{Freq: "", ExpectedMarker: "", ExpectedIndex: -1},
+		{Freq: "aabbccddeeffgghhiijjkkllmmnn", ExpectedMarker: "", ExpectedIndex: -1},
+		{Freq: "bvwbjplbgvbhsrlpgdmjqwftvncz", ExpectedMarker: "vwbj", ExpectedIndex: 5},
+		{Freq: "nppdvjthqldpwncqszvftbrmjlhg", ExpectedMarker: "pdvj", ExpectedIndex: 6},
+		{Freq: "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", ExpectedMarker: "fntj", ExpectedIndex: 10},
+		{Freq: "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", ExpectedMarker: "qfrl", ExpectedIndex: 11},
 	}
 
 	for _, test := range tests {
-		if marker, count := IdentifyTransmissionBit(test.Freq); count != test.ExpectedCount || marker != test.ExpectedMarker {
-			t.Errorf("Failed to identify transmission bit.\nGot: marker=> %s count => %d\nWanted: marker=> %s count => %d\n", marker, count, test.ExpectedMarker, test.ExpectedCount)
+		if result := IdentifyTransmissionBit(test.Freq); result.Index != test.ExpectedIndex || result.Marker != test.ExpectedMarker {
+			t.Errorf("Failed to identify transmission bit.\nGot: marker=> %s count => %d\nWanted: marker=> %s count => %d\n", result.Marker, result.Index, test.ExpectedMarker, test.ExpectedIndex)
 		}
 	}
 }
