@@ -1,13 +1,11 @@
 package daysix
 
-const chunkSize = 4
-
 type Result struct {
 	Index  int
 	Marker string
 }
 
-func Unique(input string) bool {
+func Unique(input string, chunkSize int) bool {
 	// guards
 	switch {
 	case len(input) == 0:
@@ -31,11 +29,11 @@ func Unique(input string) bool {
 	return len(matches) == chunkSize
 }
 
-func IdentifyTransmissionBit(freq string) Result {
+func IdentifyTransmissionBit(freq string, chunkSize int) Result {
 	maxLen := len(freq)
 	for i := 0; i+chunkSize <= maxLen; i++ {
 		chunk := freq[i : i+chunkSize]
-		if Unique(chunk) {
+		if Unique(chunk, chunkSize) {
 			// we found a marker
 			return Result{Index: i + chunkSize, Marker: chunk}
 
