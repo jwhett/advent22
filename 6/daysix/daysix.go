@@ -36,9 +36,10 @@ func IdentifyTransmissionBit(freq string) Result {
 	for i := 0; i+chunkSize <= maxLen; i++ {
 		chunk := freq[i : i+chunkSize]
 		if Unique(chunk) {
-			return Result{Index: i, Marker: chunk}
+			// we found a marker
+			return Result{Index: i + chunkSize, Marker: chunk}
 
 		}
 	}
-	return Result{}
+	return Result{Index: -1, Marker: ""}
 }
