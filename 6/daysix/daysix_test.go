@@ -35,6 +35,7 @@ func TestTransmissionBitIdentification(t *testing.T) {
 		{Freq: "nppdvjthqldpwncqszvftbrmjlhg", ExpectedMarker: "pdvj", ExpectedIndex: 6, ChunkSize: 4},
 		{Freq: "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", ExpectedMarker: "rfnt", ExpectedIndex: 10, ChunkSize: 4},
 		{Freq: "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", ExpectedMarker: "zqfr", ExpectedIndex: 11, ChunkSize: 4},
+		{Freq: "mjqjpqmgbljsphdztnvjfqwrcgsmlb", ExpectedMarker: "qmgbljsphdztnv", ExpectedIndex: 19, ChunkSize: 14},
 	}
 
 	for _, test := range tests {
