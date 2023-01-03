@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// Statable items include Files and Directories. Each define their own methods
+// Statable items each define their own methods
 // for identifying themselves.
 type Statable interface {
 	Name() string
@@ -14,6 +14,7 @@ type Statable interface {
 }
 
 // Files are meant to model a single file or "leaf" node.
+// Implementes Statable.
 type File struct {
 	name string
 	size int
@@ -39,8 +40,13 @@ func (f File) String() string {
 	return fmt.Sprintf("[f] %s (%d)b", f.name, f.size)
 }
 
+func NewFile(name string, size int) File {
+	return File{name, size}
+}
+
 // Directories are meant to model containers for files and are a "branch"
 // point.
+// Implementes Statable.
 type Directory struct {
 	name     string
 	children []Statable
@@ -68,4 +74,8 @@ func (d Directory) IsDir() bool {
 
 func (d Directory) String() string {
 	return fmt.Sprintf("[d] %s", d.name)
+}
+
+func NewDirectory(name string) Directory {
+	return Directory{name: name, children: make([]Statable, 0)}
 }
