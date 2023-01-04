@@ -78,16 +78,24 @@ func TestNewDirectories(t *testing.T) {
 func TestDirectoryAssociation(t *testing.T) {
 	t.Parallel()
 
+	// Directories
 	rootDir := NewDirectory("/")
 	emptyDir := NewDirectory("emptyDir")
 	dirWithOneFile := NewDirectory("withBeegFile", NewFile("beegfile", 1000))
-	dirWithTwoFiles := NewDirectory("withFiles", NewFile("onefile", 123), NewFile("otherfile", 234))
+	deepNest := NewDirectory("deeplyNested", NewFile("nestedFile", 5))
 
+	// Adding files with AddTo()
+	dirWithTwoFiles := NewDirectory("withFiles")
+	NewFile("onefile", 123).AddTo(&dirWithTwoFiles)
+	NewFile("otherfile", 234).AddTo(&dirWithTwoFiles)
+
+	// Associating directories
 	emptyDir.AddParent(&rootDir)
 	dirWithOneFile.AddParent(&rootDir)
 	dirWithTwoFiles.AddParent(&rootDir)
+	deepNest.AddParent(&dirWithOneFile)
 
-	expectedSize := dirWithOneFile.Size() + dirWithTwoFiles.Size()
+	expectedSize := dirWithOneFile.Size() + dirWithTwoFiles.Size() + deepNest.Size()
 
 	if rootDir.Size() != expectedSize {
 		t.Errorf("ERROR: Incorrect size for root directory. Got %d, wanted %d", rootDir.Size(), expectedSize)

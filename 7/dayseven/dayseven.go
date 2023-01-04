@@ -36,6 +36,10 @@ func (f File) IsDir() bool {
 	return false
 }
 
+func (f File) AddTo(d *Directory) {
+	d.children = append(d.children, &f)
+}
+
 func (f File) String() string {
 	return fmt.Sprintf("[f] %s (%d)", f.name, f.size)
 }
