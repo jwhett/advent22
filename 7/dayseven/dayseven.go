@@ -37,7 +37,7 @@ func (f File) IsDir() bool {
 }
 
 func (f File) String() string {
-	return fmt.Sprintf("[f] %s (%d)b", f.name, f.size)
+	return fmt.Sprintf("[f] %s (%d)", f.name, f.size)
 }
 
 func NewFile(name string, size int) File {
@@ -57,6 +57,9 @@ func (d Directory) Name() string {
 }
 
 func (d Directory) Size() int {
+	if len(d.children) == 0 {
+		return 0
+	}
 	var sum int
 	for _, f := range d.children {
 		sum += f.Size()
@@ -76,6 +79,9 @@ func (d Directory) String() string {
 	return fmt.Sprintf("[d] %s", d.name)
 }
 
-func NewDirectory(name string) Directory {
-	return Directory{name: name, children: make([]Statable, 0)}
+func NewDirectory(name string, children ...Statable) Directory {
+	if len(children) == 0 {
+		return Directory{name: name, children: make([]Statable, 0)}
+	}
+	return Directory{name: name, children: children}
 }

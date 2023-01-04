@@ -1,5 +1,9 @@
 package dayseven
 
+import (
+	"testing"
+)
+
 const (
 	testInput = `$ cd /
 $ ls
@@ -26,3 +30,47 @@ $ ls
 7214296 k
 `
 )
+
+func TestNewFiles(t *testing.T) {
+	t.Parallel()
+	var f File
+	fileTests := []struct {
+		name     string
+		filename string
+		size     int
+		expected File
+	}{
+		{"regular file", "plain", 123, File{"plain", 123}},
+		{"file with extension", "ext.ext", 234, File{"ext.ext", 234}},
+		{"file with spaces", "spaces in the name", 345, File{"spaces in the name", 345}},
+	}
+	for _, ft := range fileTests {
+		t.Run(ft.name, func(t *testing.T) {
+			t.Parallel()
+			if f = NewFile(ft.filename, ft.size); f != ft.expected || f.IsDir() || !f.IsFile() {
+				t.Errorf("New file failure. Got %s, wanted file name of %q with size %d.", f, ft.expected.Name(), ft.expected.Size())
+			}
+		})
+	}
+}
+
+func TestNewDirectories(t *testing.T) {
+	t.Parallel()
+	dirTests := []struct {
+		name         string
+		test         Directory
+		expectedName string
+		expectedSize int
+	}{
+		{"plain old empty directory", NewDirectory("plain"), "plain", 0},
+		{"directory with two files", NewDirectory("ext.dir", NewFile("onefile", 123), NewFile("otherfile", 234)), "ext.dir", 357},
+	}
+	for _, dt := range dirTests {
+		t.Run(dt.name, func(t *testing.T) {
+			t.Parallel()
+			if dt.test.Name() != dt.expectedName || dt.test.Size() != dt.expectedSize || dt.test.IsFile() || !dt.test.IsDir() {
+				t.Errorf("ERROR: Got %s, wanted dir name of %q with size %d.", dt.test, dt.expectedName, dt.expectedSize)
+			}
+		})
+	}
+}
