@@ -50,6 +50,7 @@ func NewFile(name string, size int) File {
 type Directory struct {
 	name     string
 	children []Statable
+	parent   *Directory
 }
 
 func (d Directory) Name() string {
@@ -73,6 +74,16 @@ func (d Directory) IsFile() bool {
 
 func (d Directory) IsDir() bool {
 	return true
+}
+
+func (d Directory) Parent() *Directory {
+	return d.parent
+}
+
+func (d *Directory) AddParent(pd *Directory) {
+	d.parent = pd
+	// naive and surely a problem
+	pd.children = append(pd.children, d)
 }
 
 func (d Directory) String() string {

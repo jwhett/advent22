@@ -74,3 +74,22 @@ func TestNewDirectories(t *testing.T) {
 		})
 	}
 }
+
+func TestDirectoryAssociation(t *testing.T) {
+	t.Parallel()
+
+	rootDir := NewDirectory("/")
+	emptyDir := NewDirectory("emptyDir")
+	dirWithOneFile := NewDirectory("withBeegFile", NewFile("beegfile", 1000))
+	dirWithTwoFiles := NewDirectory("withFiles", NewFile("onefile", 123), NewFile("otherfile", 234))
+
+	emptyDir.AddParent(&rootDir)
+	dirWithOneFile.AddParent(&rootDir)
+	dirWithTwoFiles.AddParent(&rootDir)
+
+	expectedSize := dirWithOneFile.Size() + dirWithTwoFiles.Size()
+
+	if rootDir.Size() != expectedSize {
+		t.Errorf("ERROR: Incorrect size for root directory. Got %d, wanted %d", rootDir.Size(), expectedSize)
+	}
+}
