@@ -2,7 +2,63 @@ package dayseven
 
 import (
 	"fmt"
+	"strings"
+
+	h "github.com/jwhett/advent22/helpers"
 )
+
+type ParserAction int8
+
+// The result of Parse() is one of these actions.
+const (
+	ParserCommandNotFound = -1
+	ParserCdRoot          = iota
+	ParserCdParent
+	ParserCdChild
+	ParserListCwd
+	ParserFoundDir
+	ParserFoundFile
+)
+
+func Parse(line string) ParserAction {
+	if len(line) == 0 {
+		// No commands on empty lines.
+		return ParserCommandNotFound
+	}
+	parts := strings.Split(line, " ")
+	if len(parts) <= 1 {
+		// All commands, and their output, should
+		// yield at least two parts.
+		return ParserCommandNotFound
+	}
+	switch parts[0] {
+	case "$":
+		return parseCommand(parts[1:])
+	case "dir":
+		return ParserFoundDir
+	default:
+		return ParserFoundFile
+	}
+}
+
+func parseCommand(commandParts []string) ParserAction {
+	command, rest := h.Pop(commandParts)
+	switch command {
+	case "cd":
+		switch rest[0] {
+		case "/":
+			return ParserCdRoot
+		case "..":
+			return ParserCdParent
+		default:
+			return ParserCdChild
+		}
+	case "ls":
+		return ParserListCwd
+	default:
+		return ParserCommandNotFound
+	}
+}
 
 // Statable items each define their own methods
 // for identifying themselves.

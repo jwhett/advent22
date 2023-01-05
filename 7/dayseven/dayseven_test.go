@@ -110,3 +110,29 @@ func TestDirectoryAssociation(t *testing.T) {
 		t.Errorf("ERROR: Incorrect size for root directory. Got %d, wanted %d", rootDir.Size(), expectedSize)
 	}
 }
+
+func TestParser(t *testing.T) {
+	t.Parallel()
+	cases := []struct {
+		testName       string
+		toBeParsed     string
+		expectedResult ParserAction
+	}{
+		{"empty line", "", ParserCommandNotFound},
+		{"single word found", "something", ParserCommandNotFound},
+		{"unknown command", "$ idk this command", ParserCommandNotFound},
+		{"cd to root directory", "$ cd /", ParserCdRoot},
+		{"cd to parent directory", "$ cd ..", ParserCdParent},
+		{"cd to child", "$ cd inCurrentDir", ParserCdChild},
+		{"list files in cwd", "$ ls", ParserListCwd},
+		{"identify directories in ls output", "dir thisIsADir", ParserFoundDir},
+		{"identify files in ls output", "12345 thisIsAFile", ParserFoundFile},
+	}
+	for _, testCase := range cases {
+		t.Run(testCase.testName, func(t *testing.T) {
+			if result := Parse(testCase.toBeParsed); result != testCase.expectedResult {
+				t.Errorf("ERROR: Got %d, wanted %d", result, testCase.expectedResult)
+			}
+		})
+	}
+}
