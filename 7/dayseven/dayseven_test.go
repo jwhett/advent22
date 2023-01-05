@@ -56,14 +56,18 @@ func TestNewFiles(t *testing.T) {
 
 func TestNewDirectories(t *testing.T) {
 	t.Parallel()
+	emptyDir := NewDirectory("emptyDir")
+	dirWithFiles := NewDirectory("withFiles", NewFile("onefile", 1000), NewFile("otherfile", 100))
+	dirWithNestedDir := NewDirectory("withNested", NewDirectory("nested", NewFile("afile", 100)))
 	dirTests := []struct {
 		name         string
 		test         Directory
 		expectedName string
 		expectedSize int
 	}{
-		{"plain old empty directory", NewDirectory("plain"), "plain", 0},
-		{"directory with two files", NewDirectory("ext.dir", NewFile("onefile", 123), NewFile("otherfile", 234)), "ext.dir", 357},
+		{"empty directory", emptyDir, "emptyDir", 0},
+		{"directory with two files", dirWithFiles, "withFiles", 1100},
+		{"nested directory", dirWithNestedDir, "withNested", 100},
 	}
 	for _, dt := range dirTests {
 		t.Run(dt.name, func(t *testing.T) {
@@ -85,17 +89,22 @@ func TestDirectoryAssociation(t *testing.T) {
 	deepNest := NewDirectory("deeplyNested", NewFile("nestedFile", 5))
 
 	// Adding files with AddTo()
-	dirWithTwoFiles := NewDirectory("withFiles")
-	NewFile("onefile", 123).AddTo(&dirWithTwoFiles)
-	NewFile("otherfile", 234).AddTo(&dirWithTwoFiles)
+	dirWithNested := NewDirectory("withFiles")
+	NewFile("onefile", 100).AddTo(&dirWithNested)
+	NewFile("otherfile", 10).AddTo(&dirWithNested)
 
-	// Associating directories
+	// Associating directories:
+	// - root
+	//   - emptyDir
+	//   - dirWithOneFile
+	//   - dirWithTwoFiles
+	//     - deepNest
 	emptyDir.AddParent(&rootDir)
 	dirWithOneFile.AddParent(&rootDir)
-	dirWithTwoFiles.AddParent(&rootDir)
+	dirWithNested.AddParent(&rootDir)
 	deepNest.AddParent(&dirWithOneFile)
 
-	expectedSize := dirWithOneFile.Size() + dirWithTwoFiles.Size() + deepNest.Size()
+	expectedSize := emptyDir.Size() + dirWithOneFile.Size() + dirWithNested.Size()
 
 	if rootDir.Size() != expectedSize {
 		t.Errorf("ERROR: Incorrect size for root directory. Got %d, wanted %d", rootDir.Size(), expectedSize)
