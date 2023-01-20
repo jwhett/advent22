@@ -52,37 +52,44 @@ type Result struct {
 }
 
 // Reads from r and sends each line through its output channel.
-func generate(reader io.Reader) <-chan string {
-	output := make(chan string)
+func generate(reader io.Reader) <-chan []string {
+	output := make(chan []string)
+	lines := make([]string, 0)
 	go func() {
 		scanner := bufio.NewScanner(reader)
 		for scanner.Scan() {
-			output <- scanner.Text()
+			line := scanner.Text()
+			// Empty lines delimit inventories.
+			if len(line) == 0 {
+				output <- lines
+				lines = make([]string, 0)
+				continue
+			}
+			lines = append(lines, line)
 		}
 		close(output)
 	}()
 	return output
 }
 
-// Reads from sc and sends its results on res.
-func consume(stringChannel <-chan string) <-chan Result {
+// Reads from upstream and sends on results.
+func consume(upstream <-chan []string) <-chan Result {
 	results := make(chan Result)
 	go func() {
-		currentElf := Elf{}
-		for line := range stringChannel {
-			if len(line) == 0 {
-				// Empty line delimits Elf inventories.
-				results <- Result{currentElf, nil}
-				currentElf = Elf{}
-				continue
+		for lines := range upstream {
+			currentElf := Elf{}
+			// Sum the lines of this Elf's inventory.
+			for _, line := range lines {
+				// We want to keep integers of Calories, not strings.
+				cal, err := strconv.Atoi(line)
+				if err != nil {
+					results <- Result{currentElf, err}
+				}
+				currentElf.AddToCalories(cal)
 			}
-			// We want to keep integers of Calories, not strings.
-			cal, err := strconv.Atoi(line)
-			if err != nil {
-				results <- Result{currentElf, err}
-			}
-			currentElf.AddToCalories(cal)
+			results <- Result{currentElf, nil}
 		}
+		close(results)
 	}()
 	return results
 }
