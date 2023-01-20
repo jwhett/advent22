@@ -73,9 +73,10 @@ func generate(reader io.Reader) <-chan []string {
 }
 
 // Reads from upstream and sends on results.
-func consume(upstream <-chan []string) <-chan Result {
+func consume(done <-chan struct{}, upstream <-chan []string) <-chan Result {
 	results := make(chan Result)
 	go func() {
+		defer close(results)
 		for lines := range upstream {
 			currentElf := Elf{}
 			// Sum the lines of this Elf's inventory.
@@ -87,26 +88,33 @@ func consume(upstream <-chan []string) <-chan Result {
 				}
 				currentElf.AddToCalories(cal)
 			}
-			results <- Result{currentElf, nil}
+			select {
+			case results <- Result{currentElf, nil}:
+			case <-done:
+				return
+			}
 		}
-		close(results)
 	}()
 	return results
 }
 
 // Merge all result channels into a single result channel
 // to enable a variable pool of workers.
-func merge(resultChans ...<-chan Result) <-chan Result {
+func merge(done <-chan struct{}, resultChans ...<-chan Result) <-chan Result {
 	var wg sync.WaitGroup
 	out := make(chan Result)
 
 	// Start an output goroutine for each input channel in resultChans.
 	// output copies values from r to out until r is closed, then calls wg.Done.
 	output := func(r <-chan Result) {
+		defer wg.Done()
 		for n := range r {
-			out <- n
+			select {
+			case out <- n:
+			case <-done:
+				return
+			}
 		}
-		wg.Done()
 	}
 	wg.Add(len(resultChans))
 	for _, r := range resultChans {
@@ -136,15 +144,19 @@ func main() {
 	// Spawn the generator.
 	output := generate(file)
 
+	// Our indicator when we're done processing, likely due to an error.
+	done := make(chan struct{})
+	defer close(done)
+
 	// Spawn consumers/workers.
 	resultChannels := make([]<-chan Result, 0)
 	for i := 0; i < maxWorkers; i++ {
-		resultChannels = append(resultChannels, consume(output))
+		resultChannels = append(resultChannels, consume(done, output))
 	}
 
 	// Merge the Result channels from all consumers and build our
 	// list of Elves.
-	for result := range merge(resultChannels...) {
+	for result := range merge(done, resultChannels...) {
 		if result.Error != nil {
 			panic(fmt.Sprintf("Filure reported by a result: %v\n", result.Error))
 		}
